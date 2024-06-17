@@ -61,3 +61,9 @@ git clone https://github.com/tom-doerr/dspy_nodes.git
 You can add DSPy nodes by doing `<right click>` -> `Add Node` -> `DSPy` -> `Node Name`
 
 
+## Contact
+Feel free to open an issue if you have any questions or suggestions or contact me: 
+
+E-mail: `tomdoerr96@gmail.con`
+
+Twitter: `@tom_doerr`
