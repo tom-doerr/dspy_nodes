@@ -8,7 +8,7 @@ class Predict:
     def INPUT_TYPES(cls):
                
         return {"required": {       
-                    "text": ("STRING", {"multiline": False, "default": "Hello World"}),
+                    "text": ("STRING", {"multiline": False, "default": "Hello World", "forceInput": True}),
                     }
                 }
 
@@ -17,6 +17,8 @@ class Predict:
     FUNCTION = "predict"
     OUTPUT_NODE = True
     CATEGORY = "DSPy"
+    # INPUT_IS_LIST = True
+    OUTPUT_IS_LIST = (True,)
 
     def predict(self, text):
         print(f"Tutorial Text : {text}")
@@ -32,5 +34,10 @@ class Predict:
         # return {}
         # return {generated_text}
         # return (generated_text,)
-        return (str(generated_text),)
+        # return (str(generated_text),)
+        text = generated_text.output
+        print(f'predict output text: {text}')
+        # return text
+        return (text,)
+        # return {"ui": {"text": text}, "result": (text,)}
 
