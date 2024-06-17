@@ -36,6 +36,13 @@
 
 </p>
 
+<p align="center">
+    <img src='https://github.com/tom-doerr/bins/raw/main/dspy_nodes/GQSYkC7W8AAnoXy.png'>
+    <p align="center">
+    </p>
+</p>
+
+
 
 # This is still a work in progress
 
