@@ -44,14 +44,20 @@
 
 
 
-# This is still a work in progress
+## This is still a work in progress
 
 ## What is it?
+This is an attempt to make all DSPy features available in ComfyUI.
+Using an UI to devlop DSPy programs should be way faster since it makes it easier to see what is happening and allows to quickly iterate on the DSPy program structure.
+
 
 ## Installation
-
+Clone this repository into your ComfyUI `custom_nodes` folder.
+```bash
+git clone https://github.com/tom-doerr/dspy_nodes.git
+```
 
 ## How to use it
+You can add DSPy nodes by doing `<right click>` -> `Add Node` -> `DSPy` -> `Node Name`
 
 
-## How it works
