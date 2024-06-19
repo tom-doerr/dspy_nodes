@@ -64,6 +64,6 @@ You can add DSPy nodes by doing `<right click>` -> `Add Node` -> `DSPy` -> `Node
 ## Contact
 Feel free to open an issue if you have any questions or suggestions or contact me: 
 
-E-mail: [tomdoerr96@gmail.con](mailto:tomdoerr96@gmail.con)
+E-mail: [tomdoerr96@gmail.com](mailto:tomdoerr96@gmail.com)
 
 Twitter: [@tom_doerr](https://x.com/tom_doerr)
