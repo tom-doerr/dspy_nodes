@@ -2,6 +2,7 @@ from .nodes.hello_world import *
 from .nodes.predict import *
 from .nodes.text_field import *
 from .nodes.text_output import *
+from .nodes.model import *
 # from .nodes.show_text import *
 
 
@@ -10,6 +11,7 @@ NODE_CLASS_MAPPINGS = {
     "Predict": Predict,
     "Text Field": TextField,
     "Text Output": TextOutput,
+    "Model": Model,
     # "Show Text": ShowText,
     }
     

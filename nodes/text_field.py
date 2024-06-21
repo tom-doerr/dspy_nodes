@@ -1,3 +1,5 @@
+from custom_nodes.dspy_nodes.nodes.global_file import server_settings
+
 class TextField:     
 
     @classmethod
@@ -14,4 +16,5 @@ class TextField:
     CATEGORY = "DSPy"
 
     def text_input(self, text):
+        server_settings['test'] = 'abc'
         return (text,)
