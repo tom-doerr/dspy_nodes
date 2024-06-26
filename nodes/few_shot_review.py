@@ -1,39 +1,33 @@
+import json
 from server import PromptServer
 from aiohttp import web
 import time
+# from .global_file import global_values
+from custom_nodes.dspy_nodes.nodes.global_file import global_values
 
 class MessageHolder:
     messages = {}
 
     @classmethod
     def addMessage(cls, id, message):
+        print(f"Adding message for ID: {id}")
         cls.messages[str(id)] = message
 
     @classmethod
     def waitForMessage(cls, id, period=0.1):
+        print(f"Waiting for message with ID: {id}")
         sid = str(id)
         start_time = time.time()
         while not (sid in cls.messages):
             time.sleep(period)
             if time.time() - start_time > 60:  # 1-minute timeout
+                print(f"Timeout waiting for message with ID: {id}")
                 return None
         message = cls.messages.pop(str(id), None)
+        print(f"Retrieved message for ID: {id}")
         return message
 
 class FewShotReview:
-    _instance = None
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(FewShotReview, cls).__new__(cls)
-            cls._instance.__initialized = False
-        return cls._instance
-
-    def __init__(self):
-        if self.__initialized:
-            return
-        self.__initialized = True
-
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -54,13 +48,20 @@ class FewShotReview:
         return float("NaN")  # Always re-run
 
     def run(self, module_id, unique_id):
-        from .global_file import global_values
+        random_value = global_values['random_value']
+        print(f'=== Random value in FewShotReview: {random_value}')
+
+        print(f"FewShotReview run method called with module_id: {module_id}, unique_id: {unique_id}")
+        
+        print(f"Available module IDs: {list(global_values.get('predictions', {}).keys())}")
         
         if module_id not in global_values.get('predictions', {}):
             print(f"No predictions available for module ID: {module_id}")
             return (module_id,)
         
         predictions = global_values['predictions'][module_id]
+        print(f"Number of predictions for module ID {module_id}: {len(predictions)}")
+        
         review_data = [
             {
                 "module_id": module_id,
@@ -69,6 +70,7 @@ class FewShotReview:
             } for pred in predictions
         ]
         
+        print(f"Sending review data to frontend for module_id: {module_id}")
         PromptServer.instance.send_sync("few_shot_review", {
             "id": unique_id,
             "module_id": module_id,
@@ -79,6 +81,8 @@ class FewShotReview:
         if result is None:
             print("Timed out waiting for review")
             return (module_id,)
+        
+        print(f"Received review result: {result}")
         
         # Process accepted predictions
         accepted_predictions = result.get('accepted_predictions', [])
@@ -91,25 +95,23 @@ class FewShotReview:
         print(f"Processed {len(accepted_predictions)} accepted predictions for module ID: {module_id}")
         return (module_id,)
 
-# Add this at the end of the file
 NODE_CLASS_MAPPINGS = {
     "FewShotReview": FewShotReview
 }
 
-from server import PromptServer
-from aiohttp import web
+async def few_shot_review_handle(request):
+    post = await request.json()
+    print(f"Received review reply: {post}")
+    MessageHolder.addMessage(post["unique_id"], post["result"])
+    return web.json_response({"status": "ok"})
 
 def add_route_once(path, handler):
     existing_route = next((route for route in PromptServer.instance.routes if route.path == path and route.method == "POST"), None)
     if existing_route is None:
-        PromptServer.instance.routes.append(web.post(path, handler))
+        print(f"Adding new route: {path}")
+        PromptServer.instance.routes.post(path)(handler)
     else:
         print(f"Route {path} already exists, skipping addition.")
-
-async def few_shot_review_handle(request):
-    post = await request.json()
-    MessageHolder.addMessage(post["unique_id"], post["result"])
-    return web.json_response({"status": "ok"})
 
 # Use the new function to add the route
 add_route_once('/few_shot_review_reply', few_shot_review_handle)
