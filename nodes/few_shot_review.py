@@ -1,31 +1,6 @@
-import json
 from server import PromptServer
 from aiohttp import web
-import time
-# from .global_file import global_values
-from custom_nodes.dspy_nodes.nodes.global_file import global_values
-
-class MessageHolder:
-    messages = {}
-
-    @classmethod
-    def addMessage(cls, id, message):
-        print(f"Adding message for ID: {id}")
-        cls.messages[str(id)] = message
-
-    @classmethod
-    def waitForMessage(cls, id, period=0.1):
-        print(f"Waiting for message with ID: {id}")
-        sid = str(id)
-        start_time = time.time()
-        while not (sid in cls.messages):
-            time.sleep(period)
-            if time.time() - start_time > 60:  # 1-minute timeout
-                print(f"Timeout waiting for message with ID: {id}")
-                return None
-        message = cls.messages.pop(str(id), None)
-        print(f"Retrieved message for ID: {id}")
-        return message
+import json
 
 class FewShotReview:
     @classmethod
@@ -48,70 +23,73 @@ class FewShotReview:
         return float("NaN")  # Always re-run
 
     def run(self, module_id, unique_id):
-        random_value = global_values['random_value']
-        print(f'=== Random value in FewShotReview: {random_value}')
-
-        print(f"FewShotReview run method called with module_id: {module_id}, unique_id: {unique_id}")
+        from custom_nodes.dspy_nodes.nodes.global_file import global_values
         
-        print(f"Available module IDs: {list(global_values.get('predictions', {}).keys())}")
-        
-        if module_id not in global_values.get('predictions', {}):
-            print(f"No predictions available for module ID: {module_id}")
-            return (module_id,)
-        
-        predictions = global_values['predictions'][module_id]
-        print(f"Number of predictions for module ID {module_id}: {len(predictions)}")
+        predictions = global_values.get('predictions', {}).get(module_id, [])
         
         review_data = [
             {
+                "id": i,
                 "module_id": module_id,
                 "input_text": pred.input_text,
                 "output_text": pred.output_text
-            } for pred in predictions
+            } for i, pred in enumerate(predictions)
         ]
         
-        print(f"Sending review data to frontend for module_id: {module_id}")
-        PromptServer.instance.send_sync("few_shot_review", {
-            "id": unique_id,
-            "module_id": module_id,
-            "predictions": review_data
+        # PromptServer.instance.send_sync("update_few_shot_review", {
+            # "node_id": unique_id,
+            # "module_id": module_id,
+            # "predictions": review_data
+        # })
+        some_selected_text = 'test 1234'
+        PromptServer.instance.send_sync("update_node", {
+            "node_id": unique_id,
+            "predictions": review_data,
+            "selectedText": some_selected_text  # if applicable
         })
         
-        result = MessageHolder.waitForMessage(unique_id)
-        if result is None:
-            print("Timed out waiting for review")
-            return (module_id,)
-        
-        print(f"Received review result: {result}")
-        
-        # Process accepted predictions
-        accepted_predictions = result.get('accepted_predictions', [])
-        if 'accepted_predictions' not in global_values:
-            global_values['accepted_predictions'] = {}
-        if module_id not in global_values['accepted_predictions']:
-            global_values['accepted_predictions'][module_id] = []
-        global_values['accepted_predictions'][module_id].extend(accepted_predictions)
-        
-        print(f"Processed {len(accepted_predictions)} accepted predictions for module ID: {module_id}")
         return (module_id,)
+
+
+# @PromptServer.instance.routes.get("/fewshotreview/test")
+# async def test_endpoint(request):
+    # print("Test endpoint hit")
+    # return {"status": "ok"}
+
+
+# PromptServer.instance.routes.post("/fewshotreview/print")
+@PromptServer.instance.routes.post("/fewshotreview/print")
+async def print_string(request):
+    print('=== print_string ===', flush=True)
+    try:
+        data = await request.json()
+        text = data.get('text', '')
+        print(f"FewShotReview received: {text}")
+        return web.json_response({"status": "success", "message": f"Printed: {text}"})
+    except json.JSONDecodeError:
+        return web.json_response({"status": "error", "message": "Invalid JSON"}, status=400)
+    except Exception as e:
+        print(f"Error in print_string: {str(e)}")
+        return web.json_response({"status": "error", "message": str(e)}, status=500)
+
+@PromptServer.instance.routes.get("/fewshotreview/test")
+async def test_endpoint(request):
+    print("FewShotReview test endpoint hit")
+    return web.json_response({"status": "ok"})
+
+def print_registered_routes():
+    print("Registered routes:")
+    for route in PromptServer.instance.routes._items:
+        if hasattr(route, 'method') and hasattr(route, 'path'):
+            print(f"  {route.method} {route.path}")
+        elif hasattr(route, '_method') and hasattr(route, '_path'):
+            print(f"  {route._method} {route._path}")
+        else:
+            print(f"  {route}")
+
+# Call this at the end of your file or in your initialization code
+print_registered_routes()
 
 NODE_CLASS_MAPPINGS = {
     "FewShotReview": FewShotReview
 }
-
-async def few_shot_review_handle(request):
-    post = await request.json()
-    print(f"Received review reply: {post}")
-    MessageHolder.addMessage(post["unique_id"], post["result"])
-    return web.json_response({"status": "ok"})
-
-def add_route_once(path, handler):
-    existing_route = next((route for route in PromptServer.instance.routes if route.path == path and route.method == "POST"), None)
-    if existing_route is None:
-        print(f"Adding new route: {path}")
-        PromptServer.instance.routes.post(path)(handler)
-    else:
-        print(f"Route {path} already exists, skipping addition.")
-
-# Use the new function to add the route
-add_route_once('/few_shot_review_reply', few_shot_review_handle)
