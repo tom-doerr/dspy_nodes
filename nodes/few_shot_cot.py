@@ -10,11 +10,13 @@ class FewShotCoT:
         return {"required": {       
                     "model": ("MODEL", {}),
                     "input_text": ("STRING", {"multiline": True}),
-                    "output_description": ("STRING", {}),
+                    "output_description": ("STRING", {"multiline": True}),
                     "use_accepted_examples": (["yes", "no"], {}),
                     }
                 }
     RETURN_TYPES = ("STRING", "STRING")  # output_text, module_id
+    RETURN_NAMES = ("output_text", "module_id")
+
     FUNCTION = "main"
     OUTPUT_NODE = True
     CATEGORY = "DSPy"
@@ -57,7 +59,7 @@ class FewShotCoT:
         import random
         # global_values['random_value'] = random.randint(0, 1000000)
         random_value = random.randint(0, 1000000)
-        print(f"=== Random value set in CoT: {random_value}")
+        # print(f"=== Random value set in CoT: {random_value}")
         global_values['random_value'] = random_value
 
         if 'predictions' not in global_values:
@@ -66,7 +68,7 @@ class FewShotCoT:
             global_values['predictions'][self.MODULE_ID] = []
         global_values['predictions'][self.MODULE_ID].append(prediction)
 
-        print(f"Stored prediction for module ID: {self.MODULE_ID}")
-        print(f"Number of predictions: {len(global_values['predictions'][self.MODULE_ID])}")
+        # print(f"Stored prediction for module ID: {self.MODULE_ID}")
+        # print(f"Number of predictions: {len(global_values['predictions'][self.MODULE_ID])}")
 
         return [prediction.output_text, self.MODULE_ID]

@@ -22,8 +22,10 @@ class FewShotReview:
     def IS_CHANGED(self, unique_id):
         return float("NaN")  # Always re-run
 
+
     def run(self, module_id, unique_id):
         from custom_nodes.dspy_nodes.nodes.global_file import global_values
+        print("=== global_values['predictions']:", global_values['predictions'])
         
         predictions = global_values.get('predictions', {}).get(module_id, [])
         
@@ -36,16 +38,9 @@ class FewShotReview:
             } for i, pred in enumerate(predictions)
         ]
         
-        # PromptServer.instance.send_sync("update_few_shot_review", {
-            # "node_id": unique_id,
-            # "module_id": module_id,
-            # "predictions": review_data
-        # })
-        some_selected_text = 'test 1234'
         PromptServer.instance.send_sync("update_node", {
             "node_id": unique_id,
             "predictions": review_data,
-            "selectedText": some_selected_text  # if applicable
         })
         
         return (module_id,)
