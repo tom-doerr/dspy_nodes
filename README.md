@@ -37,7 +37,7 @@
 </p>
 
 <p align="center">
-    <img src='https://github.com/tom-doerr/bins/raw/main/dspy_nodes/GQSYkC7W8AAnoXy.png'>
+    <img src='https://github.com/tom-doerr/bins/raw/main/dspy_nodes/GRbVI2IaYAIMPmo.png'>
     <p align="center">
     </p>
 </p>
