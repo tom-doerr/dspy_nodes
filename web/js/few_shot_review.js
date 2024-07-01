@@ -127,37 +127,39 @@ app.registerExtension({
                 this.onResize?.(this.size);
             };
 
-            nodeType.prototype.addSelectedTextWidget = function() {
-                let w = this.widgets?.find((w) => w.name === "selectedText");
-                if (w === undefined) {
-                    w = ComfyWidgets["STRING"](this, "selectedText", ["STRING", { multiline: true }], app).widget;
-                }
-                w.value = this.properties?.selectedText || "";
-                this.onResize?.(this.size);
-            };
+            //nodeType.prototype.addSelectedTextWidget = function() {
+                //let w = this.widgets?.find((w) => w.name === "selectedText");
+                //if (w === undefined) {
+                    //w = ComfyWidgets["STRING"](this, "selectedText", ["STRING", { multiline: true }], app).widget;
+                //}
+                //w.value = this.properties?.selectedText || "";
+                //this.onResize?.(this.size);
+            //};
 
 
             nodeType.prototype.addButton = function() {
-                const reverseButton = this.addWidget("button", "Reverse", "Reverse", () => {
+                const markGoodButton = this.addWidget("button", "Mark Good", "Mark Good", () => {
                     console.log("fsr: Reverse button clicked");
-                    console.log("Reverse button clicked");
-                    callPrintEndpoint("test jkl");  // Call the new endpoint
+                    //callPrintEndpoint("test jkl");  // Call the new endpoint
+                    callPrintEndpoint(this.outputText);  // Call the new endpoint
 
                 });
             };
 
+            //var nodeType.prototype.outputText = '';
 
 
 
-            nodeType.prototype.addPredictionsWidget = function() {
-                let w = this.widgets?.find((w) => w.name === "predictions");
-                if (w === undefined) {
-                    w = ComfyWidgets["COMBO"](this, "predictions", ["COMBO", { values: [] }], app).widget;
-                }
-                w.options.values = this.properties?.predictions?.map(p => p.text) || [];
-                w.value = this.properties?.predictions?.[0]?.text || "";
-                this.onResize?.(this.size);
-            };
+
+            //nodeType.prototype.addPredictionsWidget = function() {
+                //let w = this.widgets?.find((w) => w.name === "predictions");
+                //if (w === undefined) {
+                    //w = ComfyWidgets["COMBO"](this, "predictions", ["COMBO", { values: [] }], app).widget;
+                //}
+                //w.options.values = this.properties?.predictions?.map(p => p.text) || [];
+                //w.value = this.properties?.predictions?.[0]?.text || "";
+                //this.onResize?.(this.size);
+            //};
 
             nodeType.prototype.removeWidget = function(widget_name) {
                 const w = this.widgets?.findIndex((w) => w.name === widget_name);
@@ -174,8 +176,8 @@ app.registerExtension({
                 console.log("fsr: updateWidgets");
                 this.removeWidget("selectedText");
                 this.removeWidget("predictions");
-                this.addSelectedTextWidget();
-                this.addPredictionsWidget();
+                //this.addSelectedTextWidget();
+                //this.addPredictionsWidget();
                 this.addButton();
                 this.setDirtyCanvas(true, true);
             };
@@ -218,7 +220,11 @@ function updateNodeData(node, data) {
         node.properties.selectedText = data.selectedText;
     }
     console.log("fsr: Calling populate");
-    node.populate([data.selectedText]);
+    //node.populate([data.selectedText]);
+    console.log("fsr: [data.predictions]", [data.predictions]);
+    console.log("fsr: [data.predictions.output_text]", [data.predictions.output_text]);
+    node.populate([data.predictions[0].output_text]);
+    node.outputText = data.predictions[0].output_text;
     console.log("fsr: Calling updateWidgets");
     node.updateWidgets();
     //node.populate(data.selectedText);
