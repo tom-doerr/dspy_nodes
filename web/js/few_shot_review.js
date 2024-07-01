@@ -29,7 +29,7 @@ app.registerExtension({
 
                     const buttonWidget = this.addWidget("button", `Mark Good ${index + 1}`, `Mark Good ${index + 1}`, () => {
                         console.log(`fsr: Mark Good button clicked for prediction ${index}`);
-                        callPrintEndpoint(prediction.output_text);
+                        markGoodPrediction(this.module_id, prediction.output_text);
                     });
                 });
 
@@ -69,7 +69,29 @@ function updateNodeData(node, data) {
     console.log("fsr: Updating node data", data);
     if (data.predictions) {
         node.predictions = data.predictions;
+        node.module_id = data.predictions[0]?.module_id; // Store module_id
         node.populate(data.predictions);
+    }
+}
+
+async function markGoodPrediction(module_id, output_text) {
+    console.log("fsr: Marking prediction as good:", output_text);
+    try {
+        const response = await fetch('/fewshotreview/mark_good', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ module_id, output_text }),
+        });
+        console.log("fsr: Mark Good response status:", response.status);
+        const responseData = await response.json();
+        console.log('fsr: Mark Good response:', responseData);
+        if (!response.ok) {
+            throw new Error(responseData.message || `HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('fsr: Error marking prediction as good:', error);
     }
 }
 
