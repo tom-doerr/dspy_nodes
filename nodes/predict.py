@@ -50,10 +50,10 @@ class Predict:
 
     # def predict(self, text, signature):
     def predict(self, text, model, signature):
-        print("text:", text)
+        # print("text:", text)
 
         # lm = dspy.HFClientVLLM(model="microsoft/Phi-3-medium-128k-instruct", port=38242, url="http://localhost", max_tokens=200)
-        print("= predict file server_settings:", server_settings)
+        # print("= predict file server_settings:", server_settings)
         # lm = dspy.HFClientVLLM(model=server_settings['model'], port=38242, url="http://localhost", max_tokens=200)
         lm = model
         dspy.settings.configure(lm=lm, trace=[], temperature=0.7)
@@ -62,16 +62,16 @@ class Predict:
         # generate_answer = dspy.Predict("input -> output")
         generate_answer = dspy.Predict(signature)
         generated_text = generate_answer(input=text)
-        print("generated_text:", generated_text)
+        # print("generated_text:", generated_text)
         
         # return {}
         # return {generated_text}
         # return (generated_text,)
         # return (str(generated_text),)
         text = generated_text.output
-        print(f'predict output text: {text}')
+        # print(f'predict output text: {text}')
         # return text
-        print("server_settings:", server_settings)
+        # print("server_settings:", server_settings)
         return (text,)
         # return {"ui": {"text": text}, "result": (text,)}
 
