@@ -40,18 +40,41 @@ app.registerExtension({
                     }
                 }
 
+
+            nodeType.prototype.updateExamples = function(examples) {
+                this.examples = examples;
+                if (this.widgets) {
+                    // Remove old example widgets
+                    for (let i = this.widgets.length - 1; i >= 0; i--) {
+                        if (this.widgets[i].name.startsWith("example_")) {
+                            this.widgets.splice(i, 1);
+                        }
+                    }
+                }
+
                 // Add new example widgets
                 examples.forEach((example, index) => {
-                    this.addWidget("text", `example_${index}`, `Example ${index + 1}`, () => {}, {
+                    const inputWidget = this.addWidget("text", `example_${index}_input`, `Example ${index + 1} Input`, () => {}, {
                         multiline: true,
-                        value: `Input: ${example.input_text}\nOutput: ${example.output_text}`,
+                        value: example.input_text,
                         readonly: true
                     });
+                    const outputWidget = this.addWidget("text", `example_${index}_output`, `Example ${index + 1} Output`, () => {}, {
+                        multiline: true,
+                        value: example.output_text,
+                        readonly: true
+                    });
+
+                    // Adjust widget properties for better display
+                    inputWidget.computeSize = () => [350, 60];
+                    outputWidget.computeSize = () => [350, 60];
                 });
 
-                this.setSize([350, 30 + examples.length * 100]); // Adjust size based on number of examples
+                this.setSize([350, 30 + examples.length * 140]); // Adjust size based on number of examples
                 app.graph.setDirtyCanvas(true, true);
             };
+
+            }
         }
     }
 });

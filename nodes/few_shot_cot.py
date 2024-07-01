@@ -42,7 +42,7 @@ class FewShotCoT:
         return float("NaN")  # Always re-run
 
     def main(self, model, input_text, output_description, use_accepted_examples):
-        temperature = 2.7 + (1 * random.random())
+        temperature = 0.7 + (1 * random.random())
         dspy.settings.configure(lm=model, trace=[], temperature=temperature)
         if 'accepted_predictions' in global_values:
             print("global_values['accepted_predictions']:", global_values['accepted_predictions'])
@@ -60,8 +60,11 @@ class FewShotCoT:
                 self.predictor_cot = dspy.ChainOfThought(self.signature)
 
             def forward(self, input_text):
+                temperature = 2.7 + (1 * random.random())
                 print("temperature:", temperature)
-                result = self.predictor_cot(input_text=input_text, temperature=temperature)
+                with dspy.settings.context(lm=model, trace=[], temperature=temperature):
+                    # result = self.predictor_cot(input_text=input_text, temperature=temperature)
+                    result = self.predictor_cot(input_text=input_text)
                 output_text = result.output_text.split('---')[0].strip()
                 return dspy.Prediction(
                     input_text=input_text,
