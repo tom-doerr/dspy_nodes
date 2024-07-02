@@ -27,7 +27,8 @@ app.registerExtension({
                     textWidget.inputEl.style.opacity = 0.6;
                     textWidget.value = `Input: ${prediction.input_text}\nOutput: ${prediction.output_text}`;
 
-                    const buttonWidget = this.addWidget("button", `Mark Good ${index + 1}`, `Mark Good ${index + 1}`, () => {
+                    //const buttonWidget = this.addWidget("button", `Mark Good ${index + 1}`, `Mark Good ${index + 1}`, () => {
+                    const buttonWidget = this.addWidget("button", `Mark Good ${index + 1}`, `Mark Good`, () => {
                         console.log(`fsr: Mark Good button clicked for prediction ${index}`);
                         markGoodPrediction(this.module_id, prediction.output_text);
                     });
