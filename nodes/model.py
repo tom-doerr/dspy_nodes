@@ -22,6 +22,7 @@ class Model:
         server_settings['model'] = model
         print("====== model file server_settings:", server_settings)
         # lm = dspy.HFClientVLLM(model=server_settings['model'], port=38242, url="http://localhost", max_tokens=200)
-        lm = dspy.HFClientVLLM(model=model, port=38242, url="http://localhost", max_tokens=200)
+        # lm = dspy.HFClientVLLM(model=model, port=38242, url="http://localhost", max_tokens=200)
+        lm = dspy.OpenAI(model=model, api_base="http://localhost:38242/v1/", api_key="EMPTY")
         # return 'text'
         return [lm]

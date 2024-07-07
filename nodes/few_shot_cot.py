@@ -30,6 +30,7 @@ class FewShotCoT:
                 }
     RETURN_TYPES = ("STRING", "STRING")  # output_text, module_id
     RETURN_NAMES = ("output_text", "module_id")
+    # RETURN_NAMES = ("Custom Output 1", "Custom Output 2")
 
     FUNCTION = "main"
     OUTPUT_NODE = True
