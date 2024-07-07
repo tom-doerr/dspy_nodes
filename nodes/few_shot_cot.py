@@ -103,6 +103,8 @@ class FewShotCoT:
             global_values['predictions'] = {}
         if self.MODULE_ID not in global_values['predictions']:
             global_values['predictions'][self.MODULE_ID] = []
+
+        global_values['predictions'][self.MODULE_ID] = []
         global_values['predictions'][self.MODULE_ID].append(prediction)
 
 
