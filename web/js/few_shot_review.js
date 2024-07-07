@@ -26,9 +26,12 @@ app.registerExtension({
                     textWidget.inputEl.readOnly = true;
                     textWidget.inputEl.style.opacity = 0.6;
                     textWidget.value = `Input: ${prediction.input_text}\nOutput: ${prediction.output_text}`;
+                    
+                    // Increase the size of the textbox
+                    textWidget.inputEl.style.width = "300px";
+                    textWidget.inputEl.style.height = "100px";
 
-                    //const buttonWidget = this.addWidget("button", `Mark Good ${index + 1}`, `Mark Good ${index + 1}`, () => {
-                    const buttonWidget = this.addWidget("button", `Mark Good ${index + 1}`, `Mark Good`, () => {
+                    const buttonWidget = this.addWidget("button", `Mark Good`, `Mark Good ${index + 1}`, () => {
                         console.log(`fsr: Mark Good button clicked for prediction ${index}`);
                         markGoodPrediction(this.module_id, prediction.output_text);
                     });
@@ -50,6 +53,11 @@ app.registerExtension({
                 console.log("fsr: updateWidgets");
                 this.populate(this.predictions || []);
                 this.setDirtyCanvas(true, true);
+            };
+
+            // Add computeSize method to adjust node size
+            nodeType.prototype.computeSize = function() {
+                return [350, 200 + this.widgets.length * 120]; // Adjust these numbers as needed
             };
         }
     },

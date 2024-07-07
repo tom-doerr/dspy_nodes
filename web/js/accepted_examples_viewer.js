@@ -8,7 +8,6 @@ app.registerExtension({
         if (nodeType.comfyClass === "AcceptedExamplesViewer") {
 
             nodeType.prototype.populate = function(predictions) {
-                //console.log('fsr: populate with predictions:', predictions);
                 if (this.widgets) {
                     for (let i = 1; i < this.widgets.length; i++) {
                         this.widgets[i].onRemove?.();
@@ -21,9 +20,12 @@ app.registerExtension({
                     textWidget.inputEl.readOnly = true;
                     textWidget.inputEl.style.opacity = 0.6;
                     textWidget.value = `Input: ${prediction.input_text}\nOutput: ${prediction.output_text}`;
+                    
+                    // Increase the size of the textbox
+                    textWidget.inputEl.style.width = "300px";
+                    textWidget.inputEl.style.height = "100px";
 
-                    const buttonWidget = this.addWidget("button", `Remove ${index + 1}`, `Remove`, () => {
-                        //console.log(`fsr: Mark Good button clicked for prediction ${index}`);
+                    const buttonWidget = this.addWidget("button", `Remove`, `Remove ${index + 1}`, () => {
                         removePrediction(this.module_id, prediction.output_text);
                     });
                 });
@@ -31,7 +33,6 @@ app.registerExtension({
                 this.onResize?.(this.computeSize());
                 app.graph.setDirtyCanvas(true, false);
             }
-
 
             nodeType.prototype.onNodeCreated = function() {
                 this.addWidget("button", "Refresh", "refresh", () => {
@@ -44,22 +45,10 @@ app.registerExtension({
                 this.updateExamples(message.examples || []);
             };
 
-
-            //nodeType.prototype.onNodeCreated = function() {
-                //console.log("fsr: onNodeCreated");
-                //this.addWidget("button", "Refresh", "Refresh", () => {
-                    //console.log("fsr: Refresh button clicked");
-                    //this.populate(this.predictions || []);
-                //});
-            //};
-
             nodeType.prototype.updateWidgets = function() {
-                //console.log("fsr: updateWidgets");
                 this.populate(this.predictions || []);
                 this.setDirtyCanvas(true, true);
             };
-
-
 
             nodeType.prototype.updateExamples = function(examples) {
                 console.log("Updating examples:", examples);
@@ -79,28 +68,33 @@ app.registerExtension({
                     w.inputEl.readOnly = true;
                     w.inputEl.style.opacity = 0.6;
                     w.value = `Input: ${example.input_text}\nOutput: ${example.output_text}`;
+                    
+                    // Increase the size of the textbox
+                    w.inputEl.style.width = "300px";
+                    w.inputEl.style.height = "100px";
                 });
 
                 this.setSize(this.computeSize());
                 app.graph.setDirtyCanvas(true, true);
+            };
+
+            // Add computeSize method to adjust node size
+            nodeType.prototype.computeSize = function() {
+                return [350, 200 + this.widgets.length * 120]; // Adjust these numbers as needed
             };
         }
     }
 });
 
 api.addEventListener("update_node", (event) => {
-    //console.log("fsr: triggered update_node event", event);
     const data = event.detail;
     const node = app.graph.getNodeById(data.node_id);
-    //console.log("fsr: node.type", node.type);
     if (node && node.type === "AcceptedExamplesViewer") {
         updateNodeData(node, data);
     }
 });
 
-
 async function removePrediction(module_id, output_text) {
-    //console.log("fsr: Marking prediction as good:", output_text);
     try {
         const response = await fetch('/accepted_examples_viewer/remove_prediction', {
             method: 'POST',
@@ -109,28 +103,22 @@ async function removePrediction(module_id, output_text) {
             },
             body: JSON.stringify({ module_id, output_text }),
         });
-        //console.log("fsr: Mark Good response status:", response.status);
         const responseData = await response.json();
-        //console.log('fsr: Mark Good response:', responseData);
         if (!response.ok) {
             throw new Error(responseData.message || `HTTP error! status: ${response.status}`);
         }
     } catch (error) {
-        //console.error('fsr: Error marking prediction as good:', error);
+        console.error('Error removing prediction:', error);
     }
 }
 
-
-
 function updateNodeData(node, data) {
-    //console.log("fsr: Updating node data", data);
     if (data.predictions) {
         node.predictions = data.predictions;
         node.module_id = data.predictions[0]?.module_id; // Store module_id
         node.populate(data.predictions);
     }
 }
-
 
 api.addEventListener("update_accepted_examples", ({ detail }) => {
     console.log("Received update_accepted_examples event:", detail);
