@@ -49,13 +49,6 @@ class FewShotReview:
         return (module_id,)
 
 
-# @PromptServer.instance.routes.get("/fewshotreview/test")
-# async def test_endpoint(request):
-    # print("Test endpoint hit")
-    # return {"status": "ok"}
-
-
-# PromptServer.instance.routes.post("/fewshotreview/print")
 @PromptServer.instance.routes.post("/fewshotreview/print")
 async def print_string(request):
     print('=== print_string ===', flush=True)
