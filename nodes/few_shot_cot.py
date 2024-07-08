@@ -23,7 +23,8 @@ class FewShotCoT:
     def INPUT_TYPES(cls):
         return {"required": {       
                     "model": ("MODEL", {}),
-                    "input_text": ("STRING", {"multiline": True}),
+                    # "input_text": ("STRING", {"multiline": True}),
+                    "input_text": ("STRING", {"forceInput": True, "multiline": True}),
                     "output_description": ("STRING", {"multiline": True}),
                     "use_accepted_examples": (["yes", "no"], {}),
                     }
@@ -72,7 +73,8 @@ class FewShotCoT:
                     output_text=output_text
                 )
 
-        if use_accepted_examples == "yes" and 'accepted_predictions' in global_values:
+        # if use_accepted_examples == "yes" and 'accepted_predictions' in global_values:
+        if use_accepted_examples == "yes" and 'accepted_predictions' in global_values and self.MODULE_ID in global_values['accepted_predictions']:
             accepted_examples = [pred for preds in global_values['accepted_predictions'].values() for pred in preds]
             compile_examples = predictions_to_examples(global_values['accepted_predictions'][self.MODULE_ID])
         else:

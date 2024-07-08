@@ -8,7 +8,7 @@ class FewShotReview:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "module_id": ("STRING", {}),
+                "module_id": ("STRING", {"forceInput": True}),
             },
             "hidden": {
                 "unique_id": "UNIQUE_ID",
