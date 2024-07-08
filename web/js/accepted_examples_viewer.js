@@ -17,13 +17,18 @@ app.registerExtension({
 
                 predictions.forEach((prediction, index) => {
                     const textWidget = ComfyWidgets["STRING"](this, `prediction_${index}`, ["STRING", { multiline: true }], app).widget;
-                    textWidget.inputEl.readOnly = true;
-                    textWidget.inputEl.style.opacity = 0.6;
+                    textWidget.inputEl.readOnly = false;
+                    textWidget.inputEl.style.opacity = 1;
                     textWidget.value = `Input: ${prediction.input_text}\nOutput: ${prediction.output_text}`;
                     
                     // Increase the size of the textbox
                     textWidget.inputEl.style.width = "300px";
                     textWidget.inputEl.style.height = "100px";
+
+                    // Add event listener for text changes
+                    textWidget.inputEl.addEventListener("change", () => {
+                        updatePrediction(this.module_id, prediction.id, textWidget.value);
+                    });
 
                     const buttonWidget = this.addWidget("button", `Remove`, `Remove ${index + 1}`, () => {
                         removePrediction(this.module_id, prediction.output_text);
@@ -65,13 +70,18 @@ app.registerExtension({
                 examples.forEach((example, index) => {
                     console.log(`Example ${index}:`, example);
                     const w = ComfyWidgets.STRING(this, `example_${index}`, ["STRING", { multiline: true }], app).widget;
-                    w.inputEl.readOnly = true;
-                    w.inputEl.style.opacity = 0.6;
+                    w.inputEl.readOnly = false;
+                    w.inputEl.style.opacity = 1;
                     w.value = `Input: ${example.input_text}\nOutput: ${example.output_text}`;
                     
                     // Increase the size of the textbox
                     w.inputEl.style.width = "300px";
                     w.inputEl.style.height = "100px";
+
+                    // Add event listener for text changes
+                    w.inputEl.addEventListener("change", () => {
+                        updatePrediction(this.module_id, index, w.value);
+                    });
                 });
 
                 this.setSize(this.computeSize());
@@ -109,6 +119,24 @@ async function removePrediction(module_id, output_text) {
         }
     } catch (error) {
         console.error('Error removing prediction:', error);
+    }
+}
+
+async function updatePrediction(module_id, prediction_id, new_text) {
+    try {
+        const response = await fetch('/accepted_examples_viewer/update_prediction', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ module_id, prediction_id, new_text }),
+        });
+        const responseData = await response.json();
+        if (!response.ok) {
+            throw new Error(responseData.message || `HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('Error updating prediction:', error);
     }
 }
 
