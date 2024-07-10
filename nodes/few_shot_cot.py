@@ -26,7 +26,8 @@ class FewShotCoT:
                     # "input_text": ("STRING", {"multiline": True}),
                     "input_text": ("STRING", {"forceInput": True, "multiline": True}),
                     "output_description": ("STRING", {"multiline": True}),
-                    "use_accepted_examples": (["yes", "no"], {}),
+                    # "use_accepted_examples": (["yes", "no"], {}),
+                    "use_accepted_examples": ("BOOLEAN", {"default": True}), 
                     }
                 }
     RETURN_TYPES = ("STRING", "STRING")  # output_text, module_id
@@ -74,7 +75,8 @@ class FewShotCoT:
                 )
 
         # if use_accepted_examples == "yes" and 'accepted_predictions' in global_values:
-        if use_accepted_examples == "yes" and 'accepted_predictions' in global_values and self.MODULE_ID in global_values['accepted_predictions']:
+        # if use_accepted_examples == "yes" and 'accepted_predictions' in global_values and self.MODULE_ID in global_values['accepted_predictions']:
+        if use_accepted_examples and 'accepted_predictions' in global_values and self.MODULE_ID in global_values['accepted_predictions']:
             accepted_examples = [pred for preds in global_values['accepted_predictions'].values() for pred in preds]
             compile_examples = predictions_to_examples(global_values['accepted_predictions'][self.MODULE_ID])
         else:
