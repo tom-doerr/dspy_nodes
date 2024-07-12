@@ -42,6 +42,7 @@ class FewShotCoT:
     # INPUT_IS_LIST = (True,)
     # INPUT_IS_LIST = (False, True, False, False)
     INPUT_IS_LIST = (True,)
+    OUTPUT_IS_LIST = (True, False)
     # INPUT_IS_LIST = True
 
     def __init__(self):
