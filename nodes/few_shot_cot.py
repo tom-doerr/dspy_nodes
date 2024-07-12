@@ -37,6 +37,10 @@ class FewShotCoT:
     FUNCTION = "main"
     OUTPUT_NODE = True
     CATEGORY = "DSPy"
+    # INPUT_IS_LIST = (True,)
+    # INPUT_IS_LIST = (False, True, False, False)
+    INPUT_IS_LIST = (True,)
+    # INPUT_IS_LIST = True
 
     def __init__(self):
         self.MODULE_ID = base64.b64encode(os.urandom(6)).decode('utf-8')
@@ -45,6 +49,20 @@ class FewShotCoT:
         return float("NaN")  # Always re-run
 
     def main(self, model, input_text, output_description, use_accepted_examples):
+        print(f"cot: Input text content: {input_text}")
+        print(f"cot: Type of input_text: {type(input_text)}")
+        print(f"cot: Type of input_text: {type(input_text)}")
+        print(f"cot: Model content: {model}")
+        print(f"cot: Type of model: {type(model)}")
+        # print(f"cot: output_description content: {output_description}")
+        # print(f"cot: Type of output_description: {type(output_description)}")
+        print(f"cot: use_accepted_examples content: {use_accepted_examples}")
+        print(f"cot: Type of use_accepted_examples: {type(use_accepted_examples)}")
+        input_text = input_text[0]
+        model = model[0]
+        output_description = output_description[0]
+        use_accepted_examples = use_accepted_examples[0]
+
         temperature = 0.7 + (1 * random.random())
         dspy.settings.configure(lm=model, trace=[], temperature=temperature)
         if 'accepted_predictions' in global_values:
@@ -96,6 +114,7 @@ class FewShotCoT:
         else:
             generation_module = generation_module_uncompiled
 
+        print(f'cot: feeding input_text: {input_text}')
         prediction = generation_module(input_text=input_text)
 
         # global_values['random_value'] = random.randint(0, 1000000)
