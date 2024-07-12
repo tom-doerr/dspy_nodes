@@ -4,7 +4,7 @@ class DynamicOptionsNode:
         return {
             "required": {
                 "category": (["fruits", "colors", "animals"],),
-                "selection": (s.get_options("fruits"), {"default": "apple"}),
+                "selection2": (["abc"],),
             },
         }
     
@@ -14,22 +14,22 @@ class DynamicOptionsNode:
 
     @classmethod
     def get_options(cls, category):
+        print("category:", category)
         if category == "fruits":
-            return ["apple", "banana", "orange"]
+            return ["aapple", "banana", "orange"]
         elif category == "colors":
-            return ["red", "green", "blue"]
+            return ["rred", "green", "blue"]
         elif category == "animals":
-            return ["dog", "cat", "bird"]
+            return ["ddog", "cat", "bird"]
         return []
 
-    def process(self, category, selection):
-        return (selection,)
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, category, selection):
-        if selection not in cls.get_options(category):
-            return "Invalid selection for the chosen category"
-        return True
+    # def process(self, category):
+    def process(self, category, selection2):
+        options = self.get_options(category)
+        # return_val = (options[0] if options else "",)
+        return_val = options
+        print("return_val:", return_val)
+        return return_val
 
 # NODE_CLASS_MAPPINGS = {
     # "DynamicOptionsNode": DynamicOptionsNode

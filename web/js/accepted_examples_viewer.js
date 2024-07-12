@@ -3,9 +3,9 @@ import { api } from "../../../scripts/api.js";
 import { ComfyWidgets } from "../../../scripts/widgets.js";
 
 app.registerExtension({
-    name: "AcceptedExamplesViewer",
+    name: "Accepted Examples Viewer",
     async beforeRegisterNodeDef(nodeType) {
-        if (nodeType.comfyClass === "AcceptedExamplesViewer") {
+        if (nodeType.comfyClass === "Accepted Examples Viewer") {
 
             nodeType.prototype.populate = function(predictions) {
                 if (this.widgets) {
@@ -99,7 +99,7 @@ app.registerExtension({
 api.addEventListener("update_node", (event) => {
     const data = event.detail;
     const node = app.graph.getNodeById(data.node_id);
-    if (node && node.type === "AcceptedExamplesViewer") {
+    if (node && node.type === "Accepted Examples Viewer") {
         updateNodeData(node, data);
     }
 });
@@ -151,7 +151,7 @@ function updateNodeData(node, data) {
 api.addEventListener("update_accepted_examples", ({ detail }) => {
     console.log("Received update_accepted_examples event:", detail);
     const node = app.graph.getNodeById(detail.node_id);
-    if (node && node.comfyClass === "AcceptedExamplesViewer") {
+    if (node && node.comfyClass === "Accepted Examples Viewer") {
         node.updateExamples(detail.examples);
     }
 });
