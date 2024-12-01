@@ -44,7 +44,8 @@
 
 
 
-## This is still a work in progress
+## This isn't a finished set of nodes but only a small subset to demo the concept
+For a finished product, consider using [Langwatch](https://langwatch.ai/). It offers DSPy LLM program optimization, has tons of features and a great UI. After seeing it, I decided to stop working on dspy_nodes.
 
 ## What is it?
 This is an attempt to make all DSPy features available in ComfyUI.
